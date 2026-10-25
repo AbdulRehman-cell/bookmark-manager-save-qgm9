@@ -1,12 +1,12 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { HashRouter, Routes, Route, NavLink } from 'react-router-dom';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import About from './pages/About';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <header className="site-header">
         <div className="nav-brand">Keep</div>
         <nav className="nav-links">
@@ -30,6 +30,6 @@ export default function App() {
       <footer className="site-footer">
         <p>&copy; {new Date().getFullYear()} Keep. A quiet archive.</p>
       </footer>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
