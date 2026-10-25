@@ -1,5 +1,5 @@
 name: ForgeAI Deploy
-# trigger-token: mvn4zm20
+# trigger-token: mvn59goq
 on: [push]
 jobs:
   build:
