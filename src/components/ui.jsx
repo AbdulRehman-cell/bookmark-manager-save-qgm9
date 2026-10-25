@@ -1,101 +1,124 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-// Minimal UI kit — Button, Card, Badge, Spinner, Input, EmptyState, PageHeader, Alert, toast
-
-export function Button({ children, onClick, disabled, variant = "primary", className = "" }) {
-  const base = "px-4 py-2 rounded font-medium transition-colors focus:outline-none";
-  const styles = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300",
-    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:bg-gray-100",
-    danger: "bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300",
-    ghost: "bg-transparent text-gray-700 hover:bg-gray-100",
-  };
+// ── Button ─────────────────────────────────────────────────────────────────
+export function Button({ children, onClick, type = "button", disabled, loading, variant = "primary", className = "" }) {
+  const variantClass = {
+    primary: "ui-button-primary",
+    secondary: "ui-button-secondary",
+    ghost: "ui-button-ghost",
+    danger: "ui-button-danger",
+  }[variant] || "ui-button-primary";
   return (
-    <button className={`${base} ${styles[variant] || styles.primary} ${className}`} onClick={onClick} disabled={disabled}>
+    <button type={type} className={`ui-button ${variantClass} ${className}`} onClick={onClick} disabled={disabled || loading}>
+      {loading && <span className="ui-spinner ui-spinner-sm" aria-hidden="true" />}
       {children}
     </button>
   );
 }
 
-export function Card({ children, className = "" }) {
-  return <div className={`bg-white rounded-lg shadow p-4 ${className}`}>{children}</div>;
+// ── Card ────────────────────────────────────────────────────────────────────
+export function Card({ children, variant, className = "" }) {
+  const variantClass = variant === "bordered" ? "ui-card ui-card-bordered" : "ui-card";
+  return <div className={`${variantClass} ${className}`}>{children}</div>;
 }
 
-export function Badge({ children, color = "blue", className = "" }) {
-  const colors = {
-    blue: "bg-blue-100 text-blue-800",
-    green: "bg-green-100 text-green-800",
-    red: "bg-red-100 text-red-800",
-    gray: "bg-gray-100 text-gray-800",
-    yellow: "bg-yellow-100 text-yellow-800",
-  };
+// ── Badge ───────────────────────────────────────────────────────────────────
+export function Badge({ children, color = "blue", variant, className = "" }) {
+  const key = variant || color;
+  const colorClass = {
+    blue: "ui-badge-blue",
+    green: "ui-badge-green",
+    red: "ui-badge-red",
+    gray: "ui-badge-gray",
+    secondary: "ui-badge-secondary",
+  }[key] || "ui-badge-gray";
+  return <span className={`ui-badge ${colorClass} ${className}`}>{children}</span>;
+}
+
+// ── Spinner ─────────────────────────────────────────────────────────────────
+export function Spinner({ size = "md", className = "" }) {
+  const sizeClass = { sm: "ui-spinner-sm", md: "", lg: "ui-spinner-lg" }[size] || "";
+  return <span className={`ui-spinner ${sizeClass} ${className}`} role="status" aria-label="Loading" />;
+}
+
+// ── Input ───────────────────────────────────────────────────────────────────
+export function Input({ label, value, onChange, placeholder, type = "text", className = "", disabled }) {
   return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${colors[color] || colors.blue} ${className}`}>
-      {children}
-    </span>
+    <div className="ui-input-wrap">
+      {label && <label className="ui-input-label">{label}</label>}
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        disabled={disabled}
+        className={`ui-input ${className}`}
+      />
+    </div>
   );
 }
 
-export function Spinner({ className = "" }) {
-  return (
-    <svg className={`animate-spin h-5 w-5 text-blue-600 ${className}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-    </svg>
-  );
-}
-
-export function Input({ value, onChange, placeholder, type = "text", className = "", disabled }) {
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      disabled={disabled}
-      className={`border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 ${className}`}
-    />
-  );
-}
-
+// ── EmptyState ──────────────────────────────────────────────────────────────
 export function EmptyState({ title = "Nothing here", description = "", action }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="text-4xl mb-3">📭</div>
-      <h3 className="text-lg font-semibold text-gray-700">{title}</h3>
-      {description && <p className="text-gray-500 mt-1">{description}</p>}
-      {action && <div className="mt-4">{action}</div>}
+    <div className="ui-empty">
+      <div className="ui-empty-icon">📭</div>
+      <p className="ui-empty-title">{title}</p>
+      {description && <p className="ui-empty-desc">{description}</p>}
+      {action && <div style={{ marginTop: 16 }}>{action}</div>}
     </div>
   );
 }
 
+// ── PageHeader ──────────────────────────────────────────────────────────────
 export function PageHeader({ title, subtitle, children }) {
   return (
-    <div className="mb-6">
-      <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-      {subtitle && <p className="text-gray-500 mt-1">{subtitle}</p>}
+    <div className="ui-page-header">
+      <h1>{title}</h1>
+      {subtitle && <p className="ui-page-header-subtitle">{subtitle}</p>}
       {children}
     </div>
   );
 }
 
+// ── Alert ───────────────────────────────────────────────────────────────────
 export function Alert({ children, type = "info", className = "" }) {
-  const styles = {
-    info: "bg-blue-50 border-blue-300 text-blue-800",
-    success: "bg-green-50 border-green-300 text-green-800",
-    warning: "bg-yellow-50 border-yellow-300 text-yellow-800",
-    error: "bg-red-50 border-red-300 text-red-800",
-  };
-  return (
-    <div className={`border rounded p-3 ${styles[type] || styles.info} ${className}`}>{children}</div>
-  );
+  const typeClass = {
+    info: "ui-alert-info",
+    success: "ui-alert-success",
+    warning: "ui-alert-warning",
+    error: "ui-alert-error",
+  }[type] || "ui-alert-info";
+  return <div className={`ui-alert ${typeClass} ${className}`}>{children}</div>;
 }
 
-// Simple toast (renders nothing, just console.logs)
-export const toast = {
-  success: (msg) => console.log("[toast:success]", msg),
-  error: (msg) => console.error("[toast:error]", msg),
-  info: (msg) => console.log("[toast:info]", msg),
-  warning: (msg) => console.warn("[toast:warning]", msg),
-};
+// ── Toast ───────────────────────────────────────────────────────────────────
+function getOrCreateRoot() {
+  let root = document.getElementById("toast-root");
+  if (!root) {
+    root = document.createElement("div");
+    root.id = "toast-root";
+    document.body.appendChild(root);
+  }
+  return root;
+}
 
+function showToast(message, type = "default") {
+  const root = getOrCreateRoot();
+  const el = document.createElement("div");
+  el.className = `toast-item${type !== "default" ? " " + type : ""}`;
+  el.textContent = message;
+  root.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = "0";
+    el.style.transition = "opacity 0.3s";
+    setTimeout(() => el.remove(), 300);
+  }, 3000);
+}
+
+export const toast = {
+  success: (msg) => showToast(msg, "success"),
+  error: (msg) => showToast(msg, "error"),
+  info: (msg) => showToast(msg, "default"),
+  warning: (msg) => showToast(msg, "default"),
+};
